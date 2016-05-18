@@ -1,0 +1,657 @@
+<!doctype html>
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<link rel="stylesheet" type="text/css" href="style.css">
+<title>elle연습</title>
+<script src="js/jquery-1.12.0.min.js"></script>
+<script src="js/jquery.easing.1.3.js"></script>
+<script type="text/javascript" src="js/placeholder.js"></script>
+<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<link href='https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300' rel='stylesheet' type='text/css'>
+<script type="text/javascript">
+
+	var $mainMenu; // nav영역의 메인메뉴
+	var $subMenu; // 메인메뉴 선택시 나오는 서브메뉴 
+
+	var $slideWrap; // 슬라이드할 이미지 리스트
+	var currentMargin; // 이미지 리스트의 왼쪽 여백(왼쪽 여백을 이용해 슬라이드)
+
+	var $dot; // 메인 이미지 변환 버튼(버튼클릭/자동으로 이미지 변환)
+	var $main; // 바뀌는 이미지를 넣을 공간
+	var $newImg; // 바뀔 이미지 
+	var imgNum // 바뀌는 이미지 갯수
+	var clickNum=0 // 클릭시 변경되는 이미지
+	var currentNum=0; // 변경 전 이미지
+	var $images; // 이미지 
+
+
+	$(document).ready(function(e){
+		var menupos=$(".main_menu").offset();//상단바까지의 좌표값대입
+		$(window).scroll(function(){
+			if($(document).scrollTop()>menupos){
+				$(".main_menu").addClass("fixed");//상단바 고정을 위해 클래스지정
+			}
+			else{
+				$(".main_menu").removeClass("fixed");
+				}
+		})
+		$mainMenu=$(".main_menuList>li") 
+		$subMenu=$(".subSlide")
+		
+		$subMenu.hide();
+
+		$slideWrap=$(".gallery_wrap");
+		$slideWrap.css("width",886*$slideWrap.children().size()); //slideWrap 가로사이즈=886, 이미지 갯수만큼 너비 늘리기
+		$slideWrap.children().last().prependTo($slideWrap);
+		$slideWrap.css("margin-left",-886);
+
+		$dot=$(".dot");
+		$main=$("#imgWrap");
+		imgNum=$("#imgWrap li a img").size();
+		$images=$(".imgList li a img");
+
+
+
+		showDot(0); // 자동으로 버튼 1부터 시작 
+		
+		setInterval(repeatImg,2000) // 2초마다 이미지 변환 실행
+		
+
+		$mainMenu.bind("mouseenter",slideDown); // 각 메인메뉴 리스트가 나오도록
+		$subMenu.bind("mouseleave",slideUp); //메인메뉴 리스트에서 벗어나면 사라지도록
+
+		$("#left_btn").bind("click",onLeft); // 왼쪽버튼누르면 이미지가 오른쪽으로 쓸림
+		$("#right_btn").bind("click",onRight); //오른쪽버튼 누르면 이미지가 왼쪽으로 쏠림
+
+		$dot.bind("click",onClick);
+
+	})
+
+	 
+	function slideDown(){
+		$subMenu.hide(); // 해당되는 서브메뉴를 제외한 나머지 서브메뉴는 가려줌
+		$(this).children("ul").show()
+	}
+	function slideUp(){
+		$subMenu.hide()
+	}
+	
+	function onLeft(){
+		currentMargin=parseInt($slideWrap.css("margin-left"));//왼쪽여백을 이용해 좌우로 이동
+		$(".gallery_wrap:not(:animated)").animate({"margin-left":currentMargin-886},
+			500, "easeOutCubic",function()
+			{$slideWrap.children().first().appendTo($slideWrap)
+				$slideWrap.css("margin-left",-886)
+		})
+	}
+	function onRight(){
+		currentMargin=parseInt($slideWrap.css("margin-left"));
+		$(".gallery_wrap:not(:animated)").animate({"margin-left":currentMargin+886},
+			500, "easeOutCubic",function(){$slideWrap.children().last().prependTo($slideWrap)
+				$slideWrap.css("margin-left",-886)
+		})
+	}
+	function showDot(newIndex){
+		
+		$dot.eq(currentNum).css("background-color","#ccc");
+		$dot.eq(newIndex).css("background-color","#42ceff");
+	}
+	function onClick(){
+		countImg($(this));
+	}
+	
+	function countImg(newIndex){
+		clickNum=$dot.index($(newIndex));
+		changeImg(clickNum) 
+
+
+	}
+	function changeImg(clickNum){
+		showDot(clickNum);
+		$main.html("<img src=images/main_visual"+(clickNum+1)+".gif>");//바뀔 이미지로 마크업
+
+		
+		currentNum=clickNum;
+		
+	}
+	function repeatImg(){
+		clickNum++;
+		if(clickNum>=imgNum){
+			clickNum=0;
+		}
+		changeImg(clickNum)
+	}
+
+
+
+</script>
+</head>
+
+<body>
+	<div id="total_wrap">
+		<header>
+			<ul class="sns_icon">
+				<li><a href="#"><img src="images/sns_icon1.png" alt="twitter"></a></li>
+				<li><a href="#"><img src="images/sns_icon2.png" alt="facebook"></a></li>
+				<li><a href="#"><img src="images/sns_icon3.png" alt="youtube"></a></li>
+				<li><a href="#"><img src="images/sns_icon4.png" alt="instagram"></a></li>
+				<li><a href="#"><img src="images/sns_icon5.png" alt="google"></a></li>
+			</ul>
+			<span id="title_logo"><a href="#"><img src="images/logo.gif" alt="logo"></a></span>
+				<ul class="top_menu">
+					<li class="font_text"><a href="#">로그인</a></li>
+					<li class="font_text"><a href="#">회원가입</a></li>
+					<li class="font_text"><a href="#">고객센터</a></li>
+					<li class="font_text"><a href="#">정기구독</a></li>
+				</ul>
+			<div class="search_box">
+				<form>
+					<input id="search1" type="search" placeholder="검색어를 입력해주세요">
+					<input id="search_btn" type="image" src="images/search_icon.gif" alt="검색전송">
+				</form>
+			</div>
+		</header>
+		<nav class="main_menu">
+			<ul class="main_menuList menu_font">
+				<li><a href="#">FASHION</a>
+					<ul class="subSlide">
+						<li>
+							<div class="allow_up"></div>
+							<div class="sub_main">
+								<ul class="sub_list">
+									<li><a href="#">패션 하우투</a></li>
+									<li><a href="#">겟잇 아이템</a></li>
+									<li><a href="#">디자이너 스토리</a></li>
+									<li><a href="#">패션 위크</a></li>
+									<li><a href="#">패션화보</a></li>
+								</ul>
+								<span class="sub_right">
+									<a href="#"><img src="images/menu_innerBox1.gif" alt="sns_ad"></a>
+								</span>
+							</div>
+						</li>
+					</ul>
+				</li>
+				<li><a href="#">BEAUTY</a>
+					<ul class="subSlide">
+						<li>
+							<div class="allow_up"></div>
+							<div class="sub_main">
+								<ul class="sub_list">
+									<li><a href="#">스타뷰티</a></li>
+									<li><a href="#">에디터 초이스</a></li>
+									<li><a href="#">스킨&amp;메이크업</a></li>
+									<li><a href="#">헤어</a></li>
+									<li><a href="#">헬스&amp;다이어트</a></li>
+								</ul>
+								<span class="sub_right">
+									<a href="#"><img src="images/menu_innerBox1.gif" alt="sns_ad"></a>
+								</span>
+							</div>
+						</li>
+					</ul>
+				</li>
+				<li><a href="#">STAR</a>
+					<ul class="subSlide">
+						<li>
+							<div class="allow_up"></div>
+							<div class="sub_main">
+								<ul class="sub_list">
+									<li><a href="#">스타 파파라치</a></li>
+									<li><a href="#">스타 인터뷰</a></li>
+									<li><a href="#">스타화보</a></li>
+								</ul>
+								<span class="sub_right">
+									<a href="#"><img src="images/menu_innerBox1.gif" alt="sns_ad"></a>
+								</span>
+							</div>
+						</li>
+					</ul>
+				</li>
+				<li><a href="#">LOVE&amp;LIFE</a>
+					<ul class="subSlide">
+						<li>
+							<div class="allow_up"></div>
+							<div class="sub_main">
+								<ul class="sub_list">
+									<li><a href="#">데이트 가이드</a></li>
+									<li><a href="#">라이프 스타일</a></li>
+									<li><a href="#">컬쳐</a></li>
+									<li><a href="#">시티 가이드</a></li>
+									<li><a href="#">별자리 운세</a></li>
+								</ul>
+								<span class="sub_right">
+									<a href="#"><img src="images/menu_innerBox1.gif" alt="sns_ad"></a>
+								</span>
+							</div>
+						</li>
+					</ul>
+				</li>
+				<li><a href="#">ELLE TV</a>
+					<ul class="subSlide">
+						<li>
+							<div class="allow_up"></div>
+							<div class="sub_main">
+								<ul class="sub_list">
+									<li><a href="#">스타</a></li>
+									<li><a href="#">패션&amp;뷰티</a></li>
+									<li><a href="#">컬렉션</a></li>
+									<li><a href="#">브랜드</a></li>
+								</ul>
+								<span class="sub_right">
+									<a href="#"><img src="images/menu_innerBox1.gif" alt="sns_ad"></a>
+								</span>
+							</div>
+						</li>
+					</ul>
+				</li>
+				<li><a href="#">EVENT</a>
+					<ul class="subSlide">
+						<li>
+							<div class="allow_up"></div>
+							<div class="sub_main">
+								<ul class="sub_list">
+									<li><a href="#">진행중인 이벤트</a></li>
+									<li><a href="#">당첨자 발표</a></li>
+								</ul>
+								<span class="sub_right">
+									<a href="#"><img src="images/menu_innerBox1.gif" alt="sns_ad"></a>
+								</span>
+							</div>
+						</li>
+					</ul>
+				</li>
+				<li><a href="#">THE EDITORS</a>
+					<ul class="subSlide">
+						<li>
+							<div class="allow_up"></div>
+							<div class="sub_main">
+								<span class="sub_full">
+									<img src="images/menu_innerBox2.gif">
+								</span>
+							</div>
+						</li>
+					</ul>
+				</li>
+				<li><a href="#">ELLEA</a>
+					<ul class="subSlide">
+						<li>
+							<div class="allow_up"></div>
+							<div class="sub_main">
+								<span class="sub_full">
+									<img src="images/menu_innerBox3.gif">
+								</span>
+							</div>
+						</li>
+					</ul>
+				</li>
+			</ul>
+			<ul class="side_menu main_menuList">
+				<li>
+				<a href="#"><img src="images/dailyElle.gif" alt="dailyEllE logo"></a>
+				<ul class="subSlide">
+						<li>
+							<div class="allow_right"></div>
+							<div class="sub_main2">
+								<span class="sub_full">
+									<img src="images/menu_innerBox4.gif">
+								</span>
+							</div>
+						</li>
+					</ul>
+					</li>
+					</ul>
+
+			</span>
+		</nav>
+		<section id="section_wrap">
+			<h2>최근 이슈와 관련된 사진 및 글 입니다.</h2>
+			<div class="main_visual">
+				<div id="imgWrap">
+					<ul class="imgList">
+						<li><a href="#"><img src="images/main_visual1.gif" 
+						alt="메인 이미지 "></a></li>
+						<li><a href="#"><img src="images/main_visual2.gif" alt="메인 이미지"></a></li>
+						<li><a href="#"><img src="images/main_visual3.gif" alt="메인 이미지"></a></li>
+						<li><a href="#"><img src="images/main_visual4.gif" alt="메인 이미지"></a></li>
+						<li><a href="#"><img src="images/main_visual5.gif" alt="메인 이미지"></a></li>
+					</ul>
+				</div>
+				<ul class="dot_wrap">
+					<li><div class="dot"></div></li>
+					<li><div class="dot"></div></li>
+					<li><div class="dot"></div></li>
+					<li><div class="dot"></div></li>
+					<li><div class="dot"></div></li>
+				</ul>
+			</div>
+			<article>
+				<div class="sub_title">
+					<span class="menu_font">BREAK NEWS</span>
+				</div>
+				<div id="break_news">
+					<ul id="news_list">
+						<li>
+							<p class="break_img"><img src="images/break_news1.gif"></p>
+							<p class="font_title gray_font">스타</p>
+							<p class="font_text link_font"><a href="#">한채영, 그녀의 세 가지 색</a></p>
+						</li>
+						<li>
+							<p class="break_img"><img src="images/break_news2.gif"></p>
+							<p class="font_title gray_font">러브&amp;라이프</p>
+							<p class="font_text link_font"><a href="#">양다리를 권해요</a></p>
+						</li>
+						<li>
+							<p class="break_img"><img src="images/break_news3.gif"></p>
+							<p class="font_title gray_font">스타</p>
+							<p class="font_text link_font"><a href="#">화성으로 간 데이비드 보위</a></p>
+						</li>
+						<li>
+							<p class="break_img"><img src="images/break_news4.gif"></p>
+							<p class="font_title gray_font">패션</p>
+							<p class="font_text link_font"><a href="#">슈퍼 스타일리스트의 시상식 터치</a></p>
+						</li>
+					</ul>
+				</div>
+			</article>
+			<article>
+				<div class="sub_title">
+					<span class="menu_font">FASHION</span>
+				</div>
+				<div id="fashion_box">
+					<ui class="fashion_img">
+						<li><a href="#"><img src="images/fashion1.gif" alt="패션관련 이미지"></a></li>
+						<li><a href="#"><img src="images/fashion2.gif" alt="패션관련 이미지"></a></li>
+						<li><a href="#"><img src="images/fashion3.gif" alt="패션관련 이미지"></a></li>
+						<li><a href="#"><img src="images/fashion4.gif" alt="패션관련 이미지"></a></li>
+					</ui>
+				</div>
+			</article>
+			<article id="video_wrap">
+				<div class="video_box">
+					<div class="tv_title menu_font">ELLE TV</div>
+						<div class="main_video">
+                            <div id="video">
+                                <iframe width="415" height="258" src="https://www.youtube.com/embed/tHAsavjpGsk" frameborder="0" allowfullscreen></iframe>
+                            </div>
+                            <p class="video_font font_title link_font"><a href="#">2월호, 풋풋한 에너지로 가득 담았어요!</a></p>
+                            <p class="video_font font_text">엘르 2월호는 추위로 지칠만큼 지친 그대들의 마음에 풋풋한 
+                            생기를 전해 드려요.</p>
+					    </div>
+					<div class="sub_video">
+						<span><img src="images/sub_tv1.gif" alt="elle tv"></span>
+						<p class="video_font font_title link_font"><a href="#">글래머러스한 '와펜'백DIY</a></p>
+						<p class="video_font font_text">리폼을 생활화하는 패션</p>
+					</div>
+					<div class="sub_video">
+						<span><img src="images/sub_tv2.gif" alt="elle tv"></span>
+						<p class="video_font font_title link_font"><a href="#">정샘물 셀럽뷰티 2탄</a></p>
+						<p class="video_font font_text">정샘물 원장을 만난</p>
+					</div>
+				</div>
+			</article>
+			<article>
+				<div id="star_wrap">
+					<div class="sub_title">
+						<span class="menu_font">STAR</span>
+					</div>
+					<ul class="star_list">
+						<li>
+							<p class="star_img"><img src="images/star1.gif" alt="스타관련 이미지"></p>
+							<p class="link_font font_title"><a href="#">영화 &lt;동주&gt;미완의 청춘을 수놓다.</a></p>
+						</li>
+						<li>
+							<p class="star_img"><img src="images/star2.gif" alt="스타관련 이미지"></p>
+							<p class="link_font font_title"><a href="#">조보아의 시간</a></p>
+						</li>
+						<li>
+							<p class="star_img"><img src="images/star3.gif" alt="스타관련 이미지"></p>
+							<p class="link_font font_title"><a href="#">박승건의 푸시와 버튼이</a></p>
+						</li>
+					</ul>
+				<span class="hot_issue">
+					<img src="images/miran.gif">
+				</span>
+				<div class="paparazzi">
+					<p class="paparazzi_title"><img src="images/paparazzi.gif"></p>
+					<ul id="papara_box">
+                        <li>
+							<p class="papara_img"><img src="images/papara_img1.gif" alt="데이비드 보위"></p>
+							<p class="font_title link_font"><a href="#">화성으로 간 데이비드 보위</a></p>
+							<p class="font_text">데이비드 보위는 블랙 스타를 남기고 인간계를...</p>
+						</li>
+						<li>
+							<p class="papara_img"><img src="images/papara_img2.gif" alt="임신한 여자 사진"></p>
+							<p class="font_title link_font"><a href="#">S라인 보다 아름다운 그녀의 D라인</a></p>
+							<p class="font_text">뱃속에 아기를 가진 여자는 세상 그 어느 누구...</p>
+						</li>
+					</ul>
+				</div>
+			</div>
+			</article>
+			<article id="love_etc">
+				<div class="sub_title">
+					<span class="menu_font">BEAUTY</span>
+				</div>
+                <div id="beauty_wrap">
+                    <ul class="beauty_list">
+                        <li>
+                            <p class="beauty_img"><img src="images/beauty1.gif"></p>
+                            <p class="font_title link_font"><a href="#">캐츠 아이라인을 완벽히 그리는 방법</a></p>
+                            <p class="font_text gray_font">아이 라인으로 고양이 눈을 만들기 프로젝트. 6단계만...</p>
+                        </li>
+                        <li>
+                            <p class="beauty_img"><img src="images/beauty2.gif"></p>
+                            <p class="font_title link_font"><a href="#">오색찬란 유니콘 헤어</a></p>
+                            <p class="font_text gray_font">무지개빛으로 물들이는 레인보우 헤어로도 모자라. 유...</p>
+                        </li>
+                        <li>
+                            <p class="beauty_img"><img src="images/beauty3.gif"></p>
+                            <p class="font_title link_font"><a href="#">스킨케어, 너 하나면 돼!</a></p>
+                            <p class="font_text gray_font">하루가 멀다 하고 쏟아지는 화장품 홍수시대. 어쩌면...</p>
+                        </li>
+                        <li>
+                            <p class="beauty_img"><img src="images/beauty4.gif"></p>
+                            <p class="font_title link_font"><a href="#">무슨 소리! 건강한 걸 먹어야 건강해지지</a></p>
+                            <p class="font_text gray_font">피트니스 전문가 4인의 식단 공개. 제 3탄의 주인...</p>
+                        </li>
+                    </ul>
+                </div>
+            <div id="love_wrap">
+				<div class="love">
+					<img src="images/webtun.gif">
+				</div>
+				<div class"love_etc">
+					<ul class="etc_list">
+						<li>
+							<p class="love_img"><img src="images/love_etc1.gif" alt="강아지과 여자"></p>
+							<p class="font_title link_font"><a href="#">'강아지과'여자에 대한 남자의 속내</a></p>
+							<p class="font_text gray_font">감정에 솔직하고 끊임없이 애정이 넘치...</p>
+						</li>
+						<li>
+							<p class="love_img"><img src="images/love_etc2.gif" alt="원나잇스탠드"></p>
+							<p class="font_title link_font"><a href="#">'원 나잇 스탠드'가 어때서!</a></p>
+							<p class="font_text gray_font">성적 욕구를 충족시킬 것인가, 자유연애</p>
+						</li> 
+					</ul>
+                    </div>
+				</div>
+				<div id="life_style_wrap">
+                    <div class="life_story">
+                        <img src="images/life_story.gif">
+                    </div>
+					<ul class="life_box">
+						<li>
+							<p class="life_img"><img src="images/life_story1.gif" alt="디카프리오"></p>
+							<p class="font_title link_font"><a href="#">디카프리오의 오스카 트로피</a></p>
+							<p class="font_text gray_font">전 세계 팬들 모두가 기대하는데 이젠 좀 줄때도 되지...</p>
+						</li>
+						<li>
+							<p class="life_img"><img src="images/life_story2.gif" alt="이윤진의 작품집"></p>
+							<p class="font_title link_font"><a href="#">그녀가 찍으면 다르다</a></p>
+							<p class="font_text gray_font">사진작가 이윤진의 작품집 &lt;Still-Life&amp;...</p>
+						</li>
+						<li>
+							<p class="life_img"><img src="images/life_story3.gif" alt="다양한 화분 종류"></p>
+							<p class="font_title link_font"><a href="#">식물은 여기에 담는 게 어때요</a></p>
+							<p class="font_text gray_font">창밖에 눈보라가 치더라도 방 안에는 초록빛 여유를</p>
+						</li>
+					</ul>
+				</div>
+			</article>
+		</section>
+		<aside id="aside_wrap">
+			<div class="right_image">
+				<a href="#"><img src="images/reb_box.gif" alt="sns와 관련된 배너입니다"></a>
+			</div>
+			<div id="daily_elle">
+            	<div id="daily_title">
+                	<p><a href="#"><img src="images/daily_logo.gif" alt="daily logo"></a></p>
+                </div>
+                <div id="daily_wrap">
+					<ul id="daily_img">
+						<li><a href="#"><img src="images/right_box1.gif" alt="라이프스타일러의 매일 진짜 일상"></a></li>
+					</ul>
+				</div>
+				<div id="comment_wrap">
+					<ul id="daily_text">
+						<li><a href="#"><img src="images/right_text1.gif" alt="라이프스타일러의 코멘트"></a></li>
+					</ul>
+				</div>
+			</div>
+			<div id="hot_issue">
+				<p class="issue_title"><img src="images/issue_title.gif" alt="hot issue title"></p>
+				<ul id="issue_box">
+					<li>
+						<span class="issue_number img_number">1</span>
+						<span class="issue_img"><img src="images/issue_img1.gif" alt="핫이슈"></span>
+						<span class="img_text link_font font_text"><a href="#">체형별 코트 고르기</a></span>
+					</li>
+					<li>
+						<span class="issue_number img_number">2</span>
+						<span class="issue_img"><img src="images/issue_img2.gif" alt="핫이슈"></span>
+						<span class="img_text link_font font_text"><a href="#">'응팔'에서 나만의 이상형</a></span>
+					</li>
+					<li>
+						<span class="issue_number">3</span>
+						<span class="font_text link_font issue_text"><a href="#">실패 없이 오르가슴에 도달하는 방법!</a></span>
+					</li>
+					<li>
+						<span class="issue_number">4</span>
+						<span class="font_text link_font issue_text"><a href="#">무슨 소리! 건강한 걸 먹어야 건강해지지</a></span>
+					</li>
+					<li>
+						<span class="issue_number">5</span>
+						<span class="font_text link_font issue_text"><a href="#">'강아지과'여자에 대한 남자의 속내</a></span>
+					</li>
+                    <li>
+						<span class="issue_number">6</span>
+						<span class="font_text link_font issue_text"><a href="#">'응팔' 명장면 속 그 노래들</a></span>
+					</li>
+					<li>
+						<span class="issue_number">7</span>
+						<span class="font_text link_font issue_text"><a href="#">웹툰은 못 말려</a></span>
+					</li>
+					<li>
+						<span class="issue_number">8</span>
+						<span class="font_text link_font issue_text"><a href="#">우붓을 모르면 발리를 모른다.</a></span>
+					</li>
+                    <li>
+						<span class="issue_number">9</span>
+						<span class="font_text link_font issue_text"><a href="#">윤아와, 카이 &lt;엘르&gt;2월호 커버</a></span>
+					</li>
+					<li>
+						<span class="issue_number">10</span>
+						<span class="font_text link_font issue_text"><a href="#">정아름 '몸짱' 식단</a></span>
+					</li>
+				</ul>
+			</div>
+			
+		</aside>
+		<article id="more_wrap">
+			<div class="elle_gallery">
+        	<p class="gallery_title"><img src="images/gallery_title.gif"></p>
+            <span id="left_btn">
+            	<img src="images/left_btn.gif" alt="left button">
+            </span>
+            <span id="right_btn">
+            	<img src="images/right_btn.gif" alt="right button">
+            </span>
+            <div id="gallery_cover">
+				<ul class="gallery_wrap">
+					<li><img src="images/star_gallery1.gif" alt="스타 갤러리입니다"></li>
+					<li><img src="images/star_gallery2.gif" alt="스타 갤러리입니다"></li>
+					<li><img src="images/star_gallery3.gif" alt="스타 갤러리입니다"></li>
+				</ul>
+			</div>
+			</div>
+		<span class="sns_bar">
+			<img src="images/twitter_bar.gif" alt="sns 광고 바입니다">
+		</span>
+		<div id="more">
+			<span id="more_title"><img src="images/more.gif" alt="more title"></span>
+			<ul class="more_list">
+				<li><img src="images/more1.gif" alt="더 많은 정보 이미지">
+                    <ul class="more_subList link_font font_text">
+                        <li><a href="#">아이폰 옷 갈아 입히기</a></li>
+                        <li><a href="#">이 겨울의 꿈</a></li>
+                        <li><a href="#">정용화, 훈남의 정석</a></li>
+                    </ul>
+                </li>
+
+				<li><img src="images/more2.gif" alt="더 많은 정보 이미지">
+                    <ul class="more_subList link_font font_text">
+                        <li><a href="#">오색찬란 유니콘 헤어</a></li>
+                        <li><a href="#">스킨케어, 너 하나면 돼!</a></li>
+                        <li><a href="#">유행예고, 뷰티 팬톤 컬러</a></li>
+                    </ul>
+                </li>
+
+				<li><img src="images/more3.gif" alt="더 많은 정보 이미지">
+                    <ul class="more_subList link_font font_text">
+                        <li><a href="#">화성으로 간 데이비드 보위</a></li>
+                        <li><a href="#">영화 &lt;동주&gt;</a></li>
+                        <li><a href="#">S라인보다 아름다운 그녀의</a></li>
+                    </ul>
+                </li>
+
+				<li><img src="images/more4.gif" alt="더 많은 정보 이미지">
+                    <ul class="more_subList link_font font_text">
+                        <li><a href="#">디카프리오의 오스카 트로피</a></li>
+                        <li><a href="#">그녀가 찍으면 다르다</a></li>
+                        <li><a href="#">식물은 여기에 담는게 어때</a></li>
+                    </ul>
+                </li>
+
+				<li><img src="images/more5.gif" alt="더 많은 정보 이미지">
+                    <ul class="more_subList link_font font_text">
+                        <li><a href="#">글래머러스한 '와펜' 백 D</a></li>
+                        <li><a href="#">오늘 뭐 입지? 패션 고수들의</a></li>
+                        <li><a href="#">정샘풀 셀럽뷰티 2탄-원</a></li>
+                    </ul>
+                </li>
+			</ul>
+		</div>
+		</article>
+		<footer id="footer">
+			<span id="footer_logo"><img src="images/footer_logo.gif" alt="logo입니다"></span>
+			<ul class="footer_list">
+				<li><a href="#">ELLE소개</a></li>
+				<li><a href="#">이용안내</a></li>
+				<li><a href="#">고객센터</a></li>
+				<li><a href="#">포인트정책</a></li>
+				<li><a href="#">개인정보취급방침</a></li>
+			</ul>
+            <p id="adress">상호 : 허스트중앙(유) 대표자 : 윤경혜 사업자등록번호 : 104-81-5528 통신판매입신고 : 중구 0518호<br/> 
+            주소 : 서울시 강남구 논현동 5번지 페이스토빌딩 10층 팩스 : 02.542.3920</p>
+            <p id="copyright">copyright(c) 2012 hearst joongang all right reserved</p>
+			<div class="footer_logo">
+				<span><a href="#"><img src="images/bottom_logo1.gif" alt="기타 로고들"></a></span>
+				<span><a href="#"><img src="images/bottom_logo2.gif" alt="기타 로고들"></a></span>
+				<span><a href="#"><img src="images/bottom_logo3.gif" alt="기타 로고들"></a></span>
+			</div>
+		</footer>
+	</div>
+</body>
+</html>
